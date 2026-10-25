@@ -164,4 +164,4 @@ Server chỉ bind loopback HTTP; cookie không bật Secure vì môi trường l
 | Ít nhất 3 lỗi AI | `AI_FAILURE_AUDIT.md`, có tái hiện và regression test |
 | Ít nhất 8 atomic commits | `git log --oneline --reverse`, Conventional Commits |
 
-Chỉ tạo commit local theo từng phần chức năng, không push remote.
+Các commit được chia theo từng phần chức năng. Xem [TASK_DECOMPOSITION.md](TASK_DECOMPOSITION.md) để theo dõi công việc và thứ tự push lên GitHub.
