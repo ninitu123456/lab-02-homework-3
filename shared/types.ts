@@ -25,6 +25,7 @@ export interface Reservation {
 
 export interface SaleSnapshot {
   serverTime: number;
+  reservationTtlMs: number;
   startsAt: number;
   endsAt: number;
   products: Product[];

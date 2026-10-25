@@ -46,7 +46,7 @@ export class Inventory {
       const sale = this.db.prepare('SELECT starts_at AS startsAt, ends_at AS endsAt FROM sale WHERE id = 1').get() as { startsAt: number; endsAt: number };
       const products = this.db.prepare(`SELECT id, name, category, emoji, color, price,
         original_price AS originalPrice, initial_stock AS initialStock, available FROM products ORDER BY rowid`).all() as unknown as Product[];
-      return { serverTime: now, ...sale, products };
+      return { serverTime: now, reservationTtlMs: this.ttlMs, ...sale, products };
     });
   }
 

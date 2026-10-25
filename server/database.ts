@@ -69,8 +69,18 @@ export function transaction<T>(db: DatabaseSync, action: () => T): T {
 }
 
 export function seedDatabase(db: DatabaseSync, options: SeedOptions = {}) {
-  const startsAt = (options.now ?? Date.now()) + (options.saleDelayMs ?? 30_000);
+  transaction(db, () => seedInsideTransaction(db, options));
+}
+
+export function resetDatabase(db: DatabaseSync, options: SeedOptions = {}) {
   transaction(db, () => {
+    db.exec('DELETE FROM orders; DELETE FROM reservations; DELETE FROM sessions; DELETE FROM products; DELETE FROM sale;');
+    seedInsideTransaction(db, options);
+  });
+}
+
+function seedInsideTransaction(db: DatabaseSync, options: SeedOptions) {
+  const startsAt = (options.now ?? Date.now()) + (options.saleDelayMs ?? 30_000);
     if (db.prepare('SELECT id FROM sale WHERE id = 1').get()) return;
     db.prepare('INSERT INTO sale VALUES (1, ?, ?)').run(startsAt, startsAt + (options.saleDurationMs ?? 600_000));
     const insert = db.prepare('INSERT INTO products VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
@@ -83,5 +93,4 @@ export function seedDatabase(db: DatabaseSync, options: SeedOptions = {}) {
       ['bag', 'Balo Daily Essential', 'Lifestyle', '🎒', 'pink', 249000, 590000, 25],
     ] as const;
     for (const p of products) insert.run(...p, p[7]);
-  });
 }

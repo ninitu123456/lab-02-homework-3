@@ -15,7 +15,7 @@ export function createApp(db: DatabaseSync, options: { ttlMs?: number; clock?: (
   app.use('/api', (req, _res, next) => {
     // Browser requests must originate from the same host (Vite proxies /api in development).
     const origin = req.get('origin');
-    if (origin && new URL(origin).host !== req.get('host')) {
+    if (origin && (!URL.canParse(origin) || new URL(origin).origin !== `${req.protocol}://${req.get('host')}`)) {
       next(new DomainError(403, 'INVALID_ORIGIN', 'Yêu cầu phải đến từ cùng ứng dụng.'));
       return;
     }

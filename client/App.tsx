@@ -160,6 +160,7 @@ export function App() {
   const categories = ['Tất cả', 'Âm thanh', 'Góc làm việc', 'Thiết bị thông minh', 'Lifestyle'];
   const visible = sale?.products.filter(p => (category === 'Tất cả' || p.category === category) && p.name.toLocaleLowerCase('vi').includes(search.toLocaleLowerCase('vi'))) ?? [];
   const held = reservations.filter(r => r.status === 'RESERVED');
+  const ttlSeconds = Math.ceil((sale?.reservationTtlMs ?? 60_000) / 1000);
 
   return <>
     <div className="top-strip"><span>11.11 · DEAL CHỚP NHOÁNG, NIỀM VUI DÀI LÂU</span><span className="strip-right">Dự án mô phỏng · Không thanh toán thật</span></div>
@@ -176,7 +177,7 @@ export function App() {
           <h1>Deal đến chớp nhoáng.<br /><em>Chốt ngay kẻo lỡ!</em></h1>
           <p>Giá chạm đáy. Số lượng có hạn.<br />Một cú chớp, ngàn deal hời.</p>
           <a className="hero-cta" href="#deals">Săn deal ngay <span>↗</span></a>
-          <div className="hero-note">✦ Ưu đãi đến 62% <span>·</span> Giữ hàng trong 60 giây</div>
+          <div className="hero-note">✦ Ưu đãi đến 61% <span>·</span> Giữ hàng trong {ttlSeconds} giây</div>
         </div>
         <div className="hero-number" aria-hidden="true">11<span>.</span>11<div>FLASH SALE</div></div>
         <div className="timer-panel"><div className="timer-heading"><span className={`status-dot ${phase === 'live' ? 'green' : ''}`} />{phase === 'live' ? 'FLASH SALE ĐANG DIỄN RA' : phase === 'ended' ? 'HẸN BẠN Ở ĐỢT SALE TIẾP THEO' : 'SẴN SÀNG SĂN DEAL'}</div>
@@ -185,7 +186,7 @@ export function App() {
           <div className="timer-footer"><span>◷ Đồng bộ thời gian máy chủ</span><span className="precision-badge">MILLISECOND</span></div>
         </div>
       </section>
-      <div className="benefits"><span><i>✓</i> Giữ hàng tức thì</span><span><i>◷</i> 60 giây để chốt đơn</span><span><i>↻</i> Hết hạn tự động hoàn kho</span><span><i>◇</i> Mỗi lượt mua đều được xác nhận</span></div>
+      <div className="benefits"><span><i>✓</i> Giữ hàng tức thì</span><span><i>◷</i> {ttlSeconds} giây để chốt đơn</span><span><i>↻</i> Hết hạn tự động hoàn kho</span><span><i>◇</i> Mỗi lượt mua đều được xác nhận</span></div>
 
       {notice && <div className={`notice ${notice.error ? 'error' : 'success'}`} role={notice.error ? 'alert' : 'status'}><span>{notice.text}</span><button onClick={() => setNotice(null)} aria-label="Đóng thông báo">×</button></div>}
       {!connected && <div className="connection" role="status">{sale ? 'Đang kết nối lại máy chủ. Dữ liệu hiển thị có thể chưa được cập nhật.' : 'Đang kết nối máy chủ…'} <button onClick={() => void refresh()}>Thử lại</button></div>}
@@ -197,7 +198,7 @@ export function App() {
       </section>
 
       <section id="my-orders" className="orders"><div className="section-heading"><div><div className="eyebrow">DEAL CỦA RIÊNG BẠN</div><h2>Đơn của tôi <span>{reservations.length} lượt giữ hàng</span></h2></div><span className="session-note">Phiên mua riêng trên trình duyệt này</span></div>
-        {reservations.length === 0 ? <div className="empty-orders"><div className="empty-icon">▣</div><h3>Deal ngon đang đợi bạn</h3><p>Chọn “Giữ hàng” ở sản phẩm yêu thích.<br />Bạn có 60 giây để hoàn tất thanh toán mô phỏng.</p><a href="#deals">Khám phá flash deals ↑</a></div> : <div className="reservation-list">
+        {reservations.length === 0 ? <div className="empty-orders"><div className="empty-icon">▣</div><h3>Deal ngon đang đợi bạn</h3><p>Chọn “Giữ hàng” ở sản phẩm yêu thích.<br />Bạn có {ttlSeconds} giây để hoàn tất thanh toán mô phỏng.</p><a href="#deals">Khám phá flash deals ↑</a></div> : <div className="reservation-list">
           {reservations.map(r => { const p = sale?.products.find(item => item.id === r.productId); return <article className={`reservation ${r.status.toLowerCase()}`} key={r.id} data-testid="reservation">
             <div className={`reservation-art ${p?.color ?? 'peach'}`}>{p?.emoji ?? '📦'}</div>
             <div className="reservation-info"><span className={`state ${r.status.toLowerCase()}`}>{labels[r.status]}</span><h3>{p?.name ?? r.productId}</h3><p>{r.quantity} sản phẩm · {money(r.unitPrice * r.quantity)}</p>{r.orderId && <code>Mã đơn: {r.orderId.slice(0, 8).toUpperCase()}</code>}</div>
@@ -207,7 +208,7 @@ export function App() {
           </article>; })}
         </div>}
       </section>
-      <section className="how-it-works"><div><span className="step-number">01</span><h3>Chọn deal yêu thích</h3><p>Canh giờ sale, chọn sản phẩm và số lượng.</p></div><span className="step-arrow">→</span><div><span className="step-number">02</span><h3>Giữ hàng trong 60 giây</h3><p>Sản phẩm tạm thời được dành riêng cho bạn.</p></div><span className="step-arrow">→</span><div><span className="step-number">03</span><h3>Chốt đơn, nhận niềm vui</h3><p>Thanh toán mô phỏng trước khi hết thời gian.</p></div></section>
+      <section className="how-it-works"><div><span className="step-number">01</span><h3>Chọn deal yêu thích</h3><p>Canh giờ sale, chọn sản phẩm và số lượng.</p></div><span className="step-arrow">→</span><div><span className="step-number">02</span><h3>Giữ hàng trong {ttlSeconds} giây</h3><p>Sản phẩm tạm thời được dành riêng cho bạn.</p></div><span className="step-arrow">→</span><div><span className="step-number">03</span><h3>Chốt đơn, nhận niềm vui</h3><p>Thanh toán mô phỏng trước khi hết thời gian.</p></div></section>
     </main>
     <footer><a className="brand" href="#"><span className="brand-icon">ϟ</span>chớp!</a><span>HW3 · High-Concurrency Flash-Sale Engine</span><span>Mô phỏng học thuật · Made in Vietnam 🇻🇳</span></footer>
   </>;
